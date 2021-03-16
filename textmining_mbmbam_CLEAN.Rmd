@@ -1,0 +1,80 @@
+---
+title: "mbmbam_textmining_CLEAN"
+author: "Greg Brooks"
+date: "3/15/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+The goal of this project is to create a workflow for preprocessing, analyzing, and visualizing data pulled from transcripts of the comedy podcast "My Brother, My Brother, And Me". Building a corpus of transcripts will allow for interesting and fun visualizations MBMBAM topics, term frequency, and more. 
+
+Preprocessing steps:
+
+1. Use free version of ScrapeStorm web scraping software to pull the URLs for 152 episode transcripts on MaximumFun.org. Copy and paste into google sheets.
+2. Use REGEXEXTRACT function to pull episode number and title metadata, use find & replace to get rid of unnecessary metadata
+3. Manually get PDF link location from trancript URLS, place in excel sheet for tracking
+4. Download PDFs to folder and read all into R environment (see link explaining how) OR open them as google docs and have google's high quality OCR transfer the files. It keeps the formatting and there's no unicode problems. 
+5. Create quantenda corpus --> or other corpus format
+6. Start organizing transcripts
+
+
+
+```{r}
+library(tidyverse)
+library(tidytext) #https://www.tidytextmining.com/
+library(tm)
+library(textreadr)
+library(lexicon)
+library(quanteda) #https://data.library.virginia.edu/a-beginners-guide-to-text-analysis-with-quanteda/
+
+```
+
+Importing Data - preprocessing, converting PDFs to Google Docs, reading PDFs to text files
+```{r}
+
+# set working directory so files are read from correct location
+setwd("C:/Users/Greg/OneDrive/Desktop/data analysis projects/mbmbam_docs/")
+
+# read all files in folder with .docx extension
+file_list <- list.files(path = "C:/Users/Greg/OneDrive/Desktop/data analysis projects/mbmbam_docs/", pattern="*.docx")
+
+
+mbmbam_episodes <- lapply(file_list, read_docx)
+episode_names_full <- unlist(file_list)
+
+# extracting episode number by position from file name
+episode_number <- str_sub(episode_names_full[1:5], start = 10L, end = 12L)
+
+
+# constructing corpus
+corp_source <- VectorSource(mbmbam_episodes)
+mbmbam_corpus_tm <- VCorpus(corp_source)
+mbmbam_corpus_q <- corpus(mbmbam_corpus_tm)
+
+#naming each episode
+docnames(mbmbam_corpus_q) <- episode_number
+
+
+
+
+
+# need to clean up corpus: split host dialogue
+
+# term document matrix
+  
+# quanteda corpus, https://tutorials.quanteda.io/advanced-operations/targeted-dictionary-analysis/
+
+# https://tutorials.quanteda.io/basic-operations/corpus/corpus_segment/
+
+
+                                          
+```
+
+
+
+
+
